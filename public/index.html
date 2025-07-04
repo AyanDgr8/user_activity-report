@@ -1,0 +1,103 @@
+<!-- index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Agents Status Report</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <style>
+    :root {
+      --clr-accent: #EF6F53;
+      --clr-primary: #1976d2;
+      --clr-dark: #364C63;
+    }
+    body { padding: 0.5rem; background:#fff; max-height: 100vh; overflow-y: auto;}
+    #filterForm { border: 0.5px solid var(--clr-dark); border-radius: 4px;margin-top: 1rem; }
+    #filterForm .field:not(:last-child) { margin-bottom: 0.5rem; }
+    .table-container { margin-top: 1rem; max-height: 70vh; overflow-y: auto; }
+    .input { padding: 0.1rem ; width: 40%; margin: 0; }
+    label.label { margin-bottom: 0.1rem; }
+    .field.is-horizontal { border:none; }
+
+    h1.title { color: var(--clr-dark); font-weight: 600; font-size: 2rem; text-transform: uppercase; }
+
+    .button.is-primary {
+      background: var(--clr-accent);
+      border-color: var(--clr-accent);
+      padding: 0.25rem 0.5rem;
+      display:block;
+      margin:0.5rem auto;
+    }
+    .button.is-primary:hover { background: #e45f42; }
+    .button.is-link.is-light { color: var(--clr-primary); border: 1px solid var(--clr-primary); background:#fff; }
+    .button.is-link.is-light:hover { background: var(--clr-primary); color:#fff; }
+
+    table { border-collapse: collapse; }
+    th { color: var(--clr-dark); font-weight:600; border:none; }
+    td { color: var(--clr-primary); border:none; }
+    thead { background: none; }
+    tbody tr:nth-child(even) { background:#e7f1fb; }
+    tbody tr:nth-child(odd) { background:#fff; }
+    tbody tr:hover { background: #ffe8e2; }
+    .buttons { justify-content:center; }
+    .column { text-align:center; }
+    /* Header row for logo + title */
+    .header-row { display:flex; align-items:center; gap:1rem; }
+    .header-row h1 { flex:1; margin-left: 225px; }
+    /* Center the Account row */
+    .account-row { justify-content:center !important; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="mt-4 header-row">
+      <img src="/uploads/logo.webp" alt="Logo" width="250px">
+      <h1 class="title">Agents Status & Activity</h1>
+    </div>
+    <form id="filterForm" class="p-2">
+      <div class="field is-horizontal account-row">
+        <div class="field-label is-normal">
+          <label class="label">Account</label>
+        </div>
+        <div class="field-body">
+          <div class="field">
+            <p class="control is-expanded">
+              <!-- <input class="input" id="account" type="text" value="mc_int" required> -->
+              <input class="input" id="account" type="text" value="shams"  disabled required >
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="columns is-centered is-gapless">
+        <div class="column">
+          <label class="label">Start datetime (ISO)</label>
+          <input id="start" class="input" type="datetime-local" required />
+        </div>
+        <div class="column">
+          <label class="label">End datetime (ISO)</label>
+          <input id="end" class="input" type="datetime-local" required />
+        </div>
+      </div>
+
+      <button class="button is-primary" type="submit">Get report</button>
+    </form>
+
+    <div id="error" class="notification is-danger is-hidden"></div>
+
+    <div class="table-container">
+      <table id="reportTable" class="table is-striped is-fullwidth is-hoverable"></table>
+    </div>
+    <div class="buttons mt-4">
+      <button id="csvBtn" class="button is-link is-light" disabled>Download CSV</button>
+      <button id="htmlBtn" class="button is-link is-light" disabled>Download HTML Table</button>
+    </div>
+    <div class="mt-4 has-text-centered">Copyright © 2025. All Rights Reserved by Multycomm</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/axios.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
