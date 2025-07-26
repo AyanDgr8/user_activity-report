@@ -5,6 +5,8 @@
 <head>
   <meta charset="UTF-8" />
   <title>Agents Status Report</title>
+  <!-- Favicon so the tab shows the same logo -->
+  <link rel="icon" type="image/png" href="/uploads/MultyLogo.png" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
   <style>
@@ -48,6 +50,39 @@
     .header-row h1 { flex:1; margin-left: 225px; }
     /* Center the Account row */
     .account-row { justify-content:center !important; }
+    
+    /* Tab styles */
+    .tabs { margin-top: 1rem; }
+    .tabs ul { border-bottom: 2px solid var(--clr-dark); }
+    .tabs li.is-active a { 
+      background: var(--clr-accent); 
+      color: white; 
+      border-color: var(--clr-accent);
+    }
+    .tabs a { 
+      color: var(--clr-dark); 
+      border-bottom: 2px solid transparent;
+    }
+    .tabs a:hover { 
+      background: #f5f5f5; 
+      border-bottom-color: var(--clr-accent);
+    }
+    
+    .tab-content { display: none; }
+    .tab-content.is-active { display: block; }
+    
+    .events-response {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      padding: 1rem;
+      margin-top: 1rem;
+      max-height: 400px;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+    }
   </style>
 </head>
 <body>
@@ -56,45 +91,97 @@
       <img src="/uploads/logo.webp" alt="Logo" width="250px">
       <h1 class="title">Agents Status & Activity</h1>
     </div>
-    <form id="filterForm" class="p-2">
-      <div class="field is-horizontal account-row">
-        <div class="field-label is-normal">
-          <label class="label">Account</label>
-        </div>
-        <div class="field-body">
-          <div class="field">
-            <p class="control is-expanded">
-              <!-- <input class="input" id="account" type="text" value="mc_int" required> -->
-              <input class="input" id="account" type="text" value="shams"  disabled required >
-            </p>
+    
+    <!-- Tab Navigation -->
+    <div class="tabs is-centered">
+      <ul>
+        <li class="is-active" data-tab="status">
+          <a>Agent Status Report</a>
+        </li>
+        <li data-tab="events">
+          <a>Agent Activity Events</a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Agent Status Tab Content -->
+    <div id="status-tab" class="tab-content is-active">
+      <form id="filterForm" class="p-2">
+        <div class="field is-horizontal account-row">
+          <div class="field-label is-normal">
+            <label class="label">Account</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <p class="control is-expanded">
+                <!-- <input class="input" id="account" type="text" value="mcint" required> -->
+                <input class="input" id="account" type="text" value="mcint"  disabled required >
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="columns is-centered is-gapless">
-        <div class="column">
-          <label class="label">Start datetime (ISO)</label>
-          <input id="start" class="input" type="datetime-local" required />
+        <div class="columns is-centered is-gapless">
+          <div class="column">
+            <label class="label">Start datetime (ISO)</label>
+            <input id="start" class="input" type="datetime-local" required />
+          </div>
+          <div class="column">
+            <label class="label">End datetime (ISO)</label>
+            <input id="end" class="input" type="datetime-local" required />
+          </div>
         </div>
-        <div class="column">
-          <label class="label">End datetime (ISO)</label>
-          <input id="end" class="input" type="datetime-local" required />
-        </div>
+
+        <button class="button is-primary" type="submit">Get report</button>
+      </form>
+
+      <div id="error" class="notification is-danger is-hidden"></div>
+
+      <div class="table-container">
+        <table id="reportTable" class="table is-striped is-fullwidth is-hoverable"></table>
       </div>
-
-      <button class="button is-primary" type="submit">Get report</button>
-    </form>
-
-    <div id="error" class="notification is-danger is-hidden"></div>
-
-    <div class="table-container">
-      <table id="reportTable" class="table is-striped is-fullwidth is-hoverable"></table>
+      <div class="buttons mt-4">
+        <button id="csvBtn" class="button is-link is-light" disabled>Download CSV</button>
+        <button id="htmlBtn" class="button is-link is-light" disabled>Download HTML Table</button>
+      </div>
     </div>
-    <div class="buttons mt-4">
-      <button id="csvBtn" class="button is-link is-light" disabled>Download CSV</button>
-      <button id="htmlBtn" class="button is-link is-light" disabled>Download HTML Table</button>
+
+    <!-- Agent Events Tab Content -->
+    <div id="events-tab" class="tab-content">
+      <form id="eventsForm" class="p-2">
+        <div class="field is-horizontal account-row">
+          <div class="field-label is-normal">
+            <label class="label">Account</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <p class="control is-expanded">
+                <input class="input" id="eventsAccount" type="text" value="mcint" disabled required >
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="columns is-centered is-gapless">
+          <div class="column">
+            <label class="label">Start datetime (ISO)</label>
+            <input id="eventsStart" class="input" type="datetime-local" required />
+          </div>
+          <div class="column">
+            <label class="label">End datetime (ISO)</label>
+            <input id="eventsEnd" class="input" type="datetime-local" required />
+          </div>
+        </div>
+
+        <button class="button is-primary" type="submit">Get Events</button>
+      </form>
+
+      <div id="eventsError" class="notification is-danger is-hidden"></div>
+      
+      <div id="eventsResponse" class="events-response" style="display: none;"></div>
     </div>
-    <div class="mt-4 has-text-centered">Copyright © 2025. All Rights Reserved by Multycomm</div>
+
+    <div class="mt-4 has-text-centered">Copyright 2025. All Rights Reserved by Multycomm</div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/axios.min.js"></script>
